@@ -1,0 +1,38 @@
+{
+  "name": "swaggering-mongoose",
+  "version": "0.1.0",
+  "description": "Generate mongoose schemas and models from Swagger documents",
+  "main": "./lib/index.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "foreach": "^2.0.5",
+    "mongoose": "^4.0.1"
+  },
+  "devDependencies": {
+    "async": "^1.5.0",
+    "chai": "^2.2.0",
+    "mocha": "^2.2.1",
+    "mockgoose": "^1.10.7"
+  },
+  "scripts": {
+    "test": "node_modules/mocha/bin/mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pblabs/swaggering-mongoose"
+  },
+  "keywords": [
+    "swagger",
+    "mongoose",
+    "mongo",
+    "schema"
+  ],
+  "author": "pianobit <info@pianobit.com> (http://pianobit.com)",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/pblabs/swaggering-mongoose/issues"
+  },
+  "homepage": "https://github.com/pblabs/swaggering-mongoose"
+}
