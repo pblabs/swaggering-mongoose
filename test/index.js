@@ -10,7 +10,7 @@ mockgoose(mongoose);
 var assert = require('chai').assert;
 var Schema = mongoose.Schema;
 
-describe('swagger-mongoose tests', function() {
+describe('swaggering-mongoose tests', function() {
 
   before(function() {
     mongoose.connect('mongodb://localhost/schema-test');

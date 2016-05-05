@@ -89,7 +89,7 @@ swaggering-mongoose supports relationships between definitions in a Swagger docu
 
 ## Limitations
 
-swaggering-mongoose supports the following attributes out-of-the-box: integer, long, float, double, string, password, boolean, date, dateTime, array (including nested schemas).
+swaggering-mongoose supports the following attributes out-of-the-box: integer, long, float, double, string, password, boolean, date, dateTime, date-time, object, array (including nested schemas).
 
 ## Mongoose extension and override
 

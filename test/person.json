@@ -89,11 +89,16 @@
         "login": {
           "type": "string"
         },
-        "firstName": {
-          "type": "string"
-        },
-        "lastName": {
-          "type": "string"
+        "name": {
+          "type" : "object",
+          "properties": {
+            "firstName": {
+              "type": "string"
+            },
+            "lastName": {
+              "type": "string"
+            }
+          }
         },
         "houses": {
           "type": "array",
