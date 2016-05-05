@@ -115,9 +115,8 @@
           "items": {
             "x-swaggering-mongoose" : {
               "type": "ObjectId",
-              "includeSwaggerRef": false
-            },
-            "$ref": "#/definitions/Car"
+              "ref" : "Car"
+            }
           }
         }
       }

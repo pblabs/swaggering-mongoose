@@ -151,7 +151,7 @@ describe('swaggering-mongoose tests', function() {
     var Car = models.Car;
 
     assert(Person.schema.paths.cars.options.type[0].type === Schema.Types.ObjectId, 'Wrong "car" type');
-    assert(Person.schema.paths.cars.options.type[0].ref === undefined, 'Ref to "car" should be undefined');
+    assert(Person.schema.paths.cars.options.type[0].ref === 'Car', 'Ref to "car" should be "Car"');
     assert(Person.schema.paths.houses.options.type[0].type === Schema.Types.ObjectId, 'Wrong "house" type');
     assert(Person.schema.paths.houses.options.type[0].ref === 'House', 'Ref to "house" should be "House"');
 
