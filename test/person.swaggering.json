@@ -80,7 +80,8 @@
     },
     "Person": {
       "required": [
-        "login"
+        "login",
+        "nestedRequiredObject"
       ],
       "properties": {
         "_id": {
@@ -95,10 +96,22 @@
         "lastName": {
           "type": "string"
         },
+        "nestedRequiredObject": {
+          "type": "object",
+          "properties": {
+            "key": {
+              "type": "string"
+            },
+            "value": {
+              "type": "string"
+            }
+          }
+        },
         "password": {
           "type": "password",
            "x-swaggering-mongoose" : {
-              "select": false
+              "select": false,
+              "required": true
            }
         },
         "houses": {

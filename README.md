@@ -91,6 +91,8 @@ swaggering-mongoose supports relationships between definitions in a Swagger docu
 
 swaggering-mongoose supports the following attributes out-of-the-box: integer, long, float, double, string, password, boolean, date, dateTime, date-time, object, array (including nested schemas).
 
+Mongoose doesn't support `required` property for nested object (plain object, not reference), so, swaggering-mongoose silently ignores the property (like a `"x-swaggering-mongoose": { required: false }` override, see below).
+
 ## Mongoose extension and override
 
 While the Swagger specification tries to accommodate most use cases, additional data can be added to extend the documentation with specific mongoose properties, such as indexes, external references or fields selection.
