@@ -248,6 +248,26 @@ describe('swaggering-mongoose tests', function() {
     done();
   });
 
+  it('should supports array of objects as nested schema', function(done) {
+    var swagger = fs.readFileSync('./test/person.json');
+    var models = swaggerMongoose.compile(swagger.toString()).models;
+
+    var Person = models.Person;
+
+    // next logic is indicate that "items" is  processed as a nested schema
+    assert(Person.schema.paths.items.instance === 'Array', 'Wrong "items" attributes: instance');
+
+    var nestedObject = Person.schema.paths.items;
+
+    assert(nestedObject.schema.paths._id.instance === 'ObjectID', 'Wrong "_id" attributes');
+    assert(nestedObject.schema.paths._id.options.type === Schema.Types.ObjectId, 'Wrong "_id" attributes');
+    assert(nestedObject.schema.paths.name.instance === 'String', 'Wrong "name" attributes');
+    assert(nestedObject.schema.paths.name.options.type === String, 'Wrong "name" attributes');
+
+    done();
+  });
+
+
   it('should process circular references', function(done) {
     var swagger = fs.readFileSync('./test/person.json');
     var models = swaggerMongoose.compile(swagger.toString()).models;
