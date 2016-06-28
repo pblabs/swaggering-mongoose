@@ -19,7 +19,9 @@
   "paths": {
     "/persons": {
       "get": {
-        "tags": ["Person Operations"],
+        "tags": [
+          "Person Operations"
+        ],
         "summary": "finds persons in the system",
         "responses": {
           "200": {
@@ -109,15 +111,15 @@
         },
         "password": {
           "type": "password",
-           "x-swaggering-mongoose" : {
-              "select": false,
-              "required": true
-           }
+          "x-swaggering-mongoose": {
+            "select": false,
+            "required": true
+          }
         },
         "houses": {
           "type": "array",
           "items": {
-            "x-swaggering-mongoose" : {
+            "x-swaggering-mongoose": {
               "type": "ObjectId"
             },
             "$ref": "#/definitions/House"
@@ -126,11 +128,36 @@
         "cars": {
           "type": "array",
           "items": {
-            "x-swaggering-mongoose" : {
+            "type": "string",
+            "x-swaggering-mongoose": {
               "type": "ObjectId",
-              "ref" : "Car"
+              "ref": "Car"
             }
           }
+        },
+        "contacts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Contact"
+          }
+        }
+      }
+    },
+    "Contact": {
+      "type": "object",
+      "required": [
+        "contactID",
+        "priority"
+      ],
+      "properties": {
+        "contactID": {
+          "type": "string",
+          "x-swaggering-mongoose": {
+            "type": "ObjectId"
+          }
+        },
+        "priority": {
+          "type": "string"
         }
       }
     },

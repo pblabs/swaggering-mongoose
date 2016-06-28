@@ -186,20 +186,30 @@ describe('swaggering-mongoose tests', function() {
         ],
         cars: [
           results.car._id
-        ]
+        ],
+        contacts: [{
+          contactID: '0000000000000000000000aa',
+          priority: 'high'
+        }]
       });
       person.save(function(err, data) {
+        assert(!err, 'error should be null');
+        assert(data, 'data should be defined');
         Person
           .findOne({
             _id: data._id
           })
           .lean()
           .exec(function(err, newPerson) {
+            assert(!err, 'error should be null');
+            assert(newPerson, 'newPerson should be defined');
             async.parallel({
               car: function(cb) {
                 Car.findOne({
                   _id: newPerson.cars[0]
                 }, function(err, car) {
+                  assert(!err, 'error should be null');
+                  assert(car, 'car should be defined');
                   cb(err, car);
                 });
               },
@@ -207,6 +217,8 @@ describe('swaggering-mongoose tests', function() {
                 House.findOne({
                   _id: newPerson.houses[0]
                 }, function(err, house) {
+                  assert(!err, 'error should be null');
+                  assert(house, 'house should be defined');
                   cb(err, house);
                 });
               }
@@ -225,7 +237,10 @@ describe('swaggering-mongoose tests', function() {
               assert(newPerson.houses[0].lat === 30, 'House latitude is incorrect');
               assert(newPerson.houses[0].lng === 50.3, 'House longitude is incorrect');
               assert(newPerson.houses[0].description === 'Cool house', 'House description is incorrect');
-
+              assert(newPerson.contacts.length === 1, 'Contacts content is wrong');
+              assert(newPerson.contacts[0].priority === 'high', 'Contact priority is wrong');
+              assert(newPerson.contacts[0].contactID.toString() === '0000000000000000000000aa', 'Contact contactID type is wrong');
+              assert(newPerson.contacts[0]._id, 'Contact _id should be defined');
               done();
             });
           });
