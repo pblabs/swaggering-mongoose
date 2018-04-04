@@ -1,20 +1,21 @@
 {
   "name": "swaggering-mongoose",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Generate mongoose schemas and models from Swagger documents",
   "main": "./lib/index.js",
   "directories": {
     "test": "test"
   },
   "dependencies": {
-    "foreach": "^2.0.5",
-    "mongoose": "^4.0.1"
+    "foreach": "^2.0.5"
   },
   "devDependencies": {
     "async": "^1.5.0",
+    "bson": "^2.0.2",
     "chai": "^2.2.0",
     "mocha": "^2.2.1",
-    "mockgoose": "^1.10.7"
+    "mockgoose": "^1.10.7",
+    "mongoose": ">=4.0.1"
   },
   "scripts": {
     "test": "node_modules/mocha/bin/mocha"

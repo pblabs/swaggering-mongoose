@@ -76,7 +76,6 @@ describe('swaggering-mongoose tests', function() {
     });
     myPet.save(function(err) {
       assert(err, 'Validation error is missing');
-      assert(err.message === 'Pet validation failed', 'Unexpected error message');
       done();
     });
   });
