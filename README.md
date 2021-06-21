@@ -26,11 +26,13 @@ var myPet = new Pet({
 myPet.save();
 ```
 
+Basic support for OpenApi 3.0.0 has been introduced. See the `components/schemas` in `petstore3.json`
+
 ### Advanced usage
 
 The `compile()` method returns both the generated schemas and models from a Swagger document. The process is composed in three steps, available to hook up the process for advanced usage:
 
-1. getDefinitions(spec): returns a definitions set from a Swagger file
+1. getDefinitions(spec): returns a definition set from a Swagger file (from the `definitions` or the `components/schemas`)
 2. getSchemas(definitions): returns a set of mongoose schemas from a definitions set
 3. getModels(schemas): returns a set of mongoose models from a schemas set
 

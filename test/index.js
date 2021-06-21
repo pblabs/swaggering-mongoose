@@ -31,7 +31,7 @@ describe('swaggering-mongoose tests', function() {
     });
   });
 
-  it('should create an example pet and return all valid properties', function(done) {
+  it('should create a sample pet and return all valid properties', function(done) {
     var swagger = fs.readFileSync('./test/petstore.json');
     var Pet = swaggerMongoose.compile(swagger).models.Pet;
     var myPet = new Pet({
@@ -53,8 +53,9 @@ describe('swaggering-mongoose tests', function() {
       notAKey: 'test'
     });
     myPet.save(function(err) {
-      if (err)
+      if (err) {
         throw err;
+      }
       Pet.findOne({
         id: 123
       }, function(err, data) {
@@ -72,7 +73,7 @@ describe('swaggering-mongoose tests', function() {
     });
   });
 
-  it('should not create an example without required field', function(done) {
+  it('should not create a sample without required field', function(done) {
     var swagger = fs.readFileSync('./test/petstore.json');
     var Pet = swaggerMongoose.compile(swagger).models.Pet;
     var myPet = new Pet({
@@ -84,7 +85,7 @@ describe('swaggering-mongoose tests', function() {
     });
   });
 
-  it('should create an example pet from a file', function(done) {
+  it('should create a sample pet from a file', function(done) {
     var swagger = fs.readFileSync('./test/petstore.json');
     var Pet = swaggerMongoose.compile(swagger).models.Pet;
     var myPet = new Pet({
@@ -92,8 +93,9 @@ describe('swaggering-mongoose tests', function() {
       name: 'Fluffy'
     });
     myPet.save(function(err) {
-      if (err)
+      if (err) {
         throw err;
+      }
       Pet.findOne({
         id: 123
       }, function(err, data) {
@@ -104,7 +106,7 @@ describe('swaggering-mongoose tests', function() {
     });
   });
 
-  it('should create an example pet from a JSON object', function(done) {
+  it('should create a sample pet from a JSON object', function(done) {
     var swagger = fs.readFileSync('./test/petstore.json');
     var Pet = swaggerMongoose.compile(JSON.parse(swagger)).models.Pet;
     var myPet = new Pet({
@@ -112,8 +114,9 @@ describe('swaggering-mongoose tests', function() {
       name: 'Fluffy'
     });
     myPet.save(function(err) {
-      if (err)
+      if (err) {
         throw err;
+      }
       Pet.findOne({
         id: 123
       }, function(err, data) {
@@ -124,7 +127,7 @@ describe('swaggering-mongoose tests', function() {
     });
   });
 
-  it('should create an example pet from a string', function(done) {
+  it('should create a sample pet from a string', function(done) {
     var swagger = fs.readFileSync('./test/petstore.json');
     var Pet = swaggerMongoose.compile(swagger.toString()).models.Pet;
     var myPet = new Pet({
@@ -132,8 +135,9 @@ describe('swaggering-mongoose tests', function() {
       name: 'Fluffy'
     });
     myPet.save(function(err) {
-      if (err)
+      if (err) {
         throw err;
+      }
       Pet.findOne({
         id: 123
       }, function(err, data) {
@@ -144,7 +148,7 @@ describe('swaggering-mongoose tests', function() {
     });
   });
 
-  it('should create an example person with relations to external collections', function(done) {
+  it('should create a sample person with relations to external collections', function(done) {
     var swagger = fs.readFileSync('./test/person.swaggering.json');
 
     var models = swaggerMongoose.compile(swagger.toString()).models;
@@ -299,6 +303,28 @@ describe('swaggering-mongoose tests', function() {
     assert(Human.schema.paths.mother.options.type === Schema.Types.ObjectId, 'Wrong "mother" attribute: type');
 
     done();
+  });
+
+
+  it('should support the openApi 3.0.0 format', function(done) {
+    var swagger = fs.readFileSync('./test/petstore3.json');
+    var Pet = swaggerMongoose.compile(swagger).models.Pet;
+    var myPet = new Pet({
+      id: 123,
+      name: 'Fluffy'
+    });
+    myPet.save(function(err) {
+      if (err) {
+        throw err;
+      }
+      Pet.findOne({
+        id: 123
+      }, function(err, data) {
+        assert(data.id === 123, 'ID mismatch');
+        assert(data.name === 'Fluffy', 'Name mismatch');
+        done();
+      });
+    });
   });
 
 });
