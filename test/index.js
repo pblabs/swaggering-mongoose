@@ -5,19 +5,20 @@ var swaggerMongoose = require('./../lib/index');
 var fs = require('fs');
 var async = require('async');
 var mongoose = require('mongoose');
-var mockgoose = require('mockgoose');
-mockgoose(mongoose);
+var Mockgoose = require('mockgoose').Mockgoose;
+var mockgoose = new Mockgoose(mongoose);
 var assert = require('chai').assert;
 var Schema = mongoose.Schema;
 
 describe('swaggering-mongoose tests', function() {
 
-  before(function() {
-    mongoose.connect('mongodb://localhost/schema-test');
+  beforeEach(function(done) {
+    mockgoose.prepareStorage().then( function() {
+      mongoose.connect('mongodb://localhost/schema-test', { useNewUrlParser: true }, done);
+    });
   });
 
-  afterEach(function() {
-    mongoose.disconnect();
+  afterEach(function(done) {
     delete mongoose.models.Pet;
     delete mongoose.models.Address;
     delete mongoose.models.Error;
@@ -25,6 +26,9 @@ describe('swaggering-mongoose tests', function() {
     delete mongoose.models.House;
     delete mongoose.models.Car;
     delete mongoose.models.Human;
+    mockgoose.helper.reset().then(function() {
+      mongoose.disconnect(done);
+    });
   });
 
   it('should create an example pet and return all valid properties', function(done) {
@@ -255,7 +259,7 @@ describe('swaggering-mongoose tests', function() {
 
     // next logic is indicate that "_id" and "__v" fields are MongoDB native
     assert(Person.schema.paths._id.instance === 'ObjectID', 'Wrong "_id" attributes');
-    assert(Person.schema.paths._id.options.type === Schema.Types.ObjectId, 'Wrong "_id" attributes');
+    assert(Person.schema.paths._id.options.type === Schema.Types.ObjectId || Person.schema.paths._id.options.type === 'ObjectId', 'Wrong "_id" attributes');
     assert(Person.schema.paths.__v.instance === 'Number', 'Wrong "__v" attributes');
     assert(Person.schema.paths.__v.options.type === Number, 'Wrong "__v" attributes');
 
@@ -274,7 +278,7 @@ describe('swaggering-mongoose tests', function() {
     var nestedObject = Person.schema.paths.items;
 
     assert(nestedObject.schema.paths._id.instance === 'ObjectID', 'Wrong "_id" attributes');
-    assert(nestedObject.schema.paths._id.options.type === Schema.Types.ObjectId, 'Wrong "_id" attributes');
+    assert(nestedObject.schema.paths._id.options.type === Schema.Types.ObjectId || nestedObject.schema.paths._id.options.type === 'ObjectId', 'Wrong "_id" attributes');
     assert(nestedObject.schema.paths.name.instance === 'String', 'Wrong "name" attributes');
     assert(nestedObject.schema.paths.name.options.type === String, 'Wrong "name" attributes');
 
