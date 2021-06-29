@@ -15,11 +15,11 @@ npm install swaggering-mongoose
 Pass a swagger document with `definitions` to the `compile()` method and then dynamically access the underlying mongoose models.
 
 ```js
-var swaggeringMongoose = require('swaggering-mongoose');
+const swaggeringMongoose = require('swaggering-mongoose');
 
-var swagger = fs.readFileSync('./petstore.json');
-var Pet = swaggeringMongoose.compile(swagger).models.Pet;
-var myPet = new Pet({
+const swagger = fs.readFileSync('./petstore.json');
+const { models: { Pet } } = swaggeringMongoose.compile(swagger);
+const myPet = new Pet({
     id: 123,
     name: 'Fluffy'
     });
@@ -37,20 +37,24 @@ The `compile()` method returns both the generated schemas and models from a Swag
 3. getModels(schemas): returns a set of mongoose models from a schemas set
 
 ```js
-var swaggeringMongoose = require('swaggering-mongoose');
+const swaggeringMongoose = require('swaggering-mongoose');
 
-var swagger = fs.readFileSync('./petstore.json');
+const swagger = fs.readFileSync('./petstore.json');
 
-var definitions = swaggeringMongoose.getDefinitions(swagger);
+const definitions = swaggeringMongoose.getDefinitions(swagger);
 // you can augment/override definitions here
 
-var schemas = swaggeringMongoose.getSchemas(definitions);
+const schemas = swaggeringMongoose.getSchemas(definitions);
 
 // you can augment schemas here, e.g.
 schemas.Pet.set('autoIndex', true);
+// or
+schemas.Pet.set('toJSON', { transform: (doc, pojo) => {
+  pojo._id = pojo._id.toString() // the _id object is now a string in the POJO doc
+} })
 
-var Pet = swaggeringMongoose.getModels(schemas).Pet;
-var myPet = new Pet({
+const { Pet } = swaggeringMongoose.getModels(schemas);
+const myPet = new Pet({
     id: 123,
     name: 'Fluffy'
     });
