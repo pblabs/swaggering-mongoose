@@ -147,6 +147,17 @@
             },
             "tag": {
               "type": "string"
+            },
+            "owner": {
+              "$ref": "#/definitions/Owner"
+            }
+          }
+        },
+        "Owner": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
             }
           }
         }, 
