@@ -20,6 +20,7 @@ describe('swaggering-mongoose tests', function() {
 
   afterEach(function(done) {
     delete mongoose.models.Pet;
+    delete mongoose.models.Owner;
     delete mongoose.models.Address;
     delete mongoose.models.Error;
     delete mongoose.models.Person;
@@ -327,4 +328,25 @@ describe('swaggering-mongoose tests', function() {
     });
   });
 
+  it('should handle object reference properties based on reference type', function(done) {
+    var swagger = fs.readFileSync('./test/petstore3.json');
+    var Pet = swaggerMongoose.compile(swagger).models.Pet;
+    var myPet = new Pet({
+      id: 123,
+      name: 'Gizmo',
+      owner: { name: 'Chris' }
+    });
+    myPet.save(function(err) {
+      if (err) {
+        throw err;
+      }
+      Pet.findOne({
+        id: 123
+      }, function(err, data) {
+        assert(typeof data.owner === 'object', 'Type mismatch');
+        assert(data.owner.name === 'Chris', 'Name mismatch');
+        done();
+      });
+    });
+  });
 });
