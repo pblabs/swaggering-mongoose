@@ -97,9 +97,9 @@ swaggering-mongoose supports relationships between definitions in a Swagger docu
 
 ## Mongoose extension and override
 
-While the Swagger specification tries to accommodate most use cases, additional data can be added to extend the documentation with specific mongoose properties, such as indexes, external references or fields selection.
+While the Swagger specification tries to accommodate most use cases, additional details can be added to extend the documentation with specific mongoose options, such as indexes, external references or fields selection.
 
-Extension are defined as JSON objects in a `x-swaggering-mongoose` property, e.g.
+These extras can be defined as JSON objects in a `x-swaggering-mongoose` property, e.g.
 
 ```
 "definitions" : {
