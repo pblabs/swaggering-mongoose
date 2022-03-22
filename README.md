@@ -30,11 +30,13 @@ Basic support for OpenApi 3.0.0 has been introduced. See the `components/schemas
 
 ### Advanced usage
 
-The `compile()` method returns both the generated schemas and models from a Swagger document. The process is composed in three steps, available to hook up the process for advanced usage:
+The `compile()` method returns both the generated schemas and models from a Swagger document. Internally, the process is composed by three steps:
 
 1. getDefinitions(spec): returns a definition set from a Swagger file (from the `definitions` or the `components/schemas`)
 2. getSchemas(definitions): returns a set of mongoose schemas from a definitions set
-3. getModels(schemas): returns a set of mongoose models from a schemas set
+3. getModels(schemas): creates and returns a set of mongoose models from a schemas set
+
+These functions are exported along with the `compile()`, to be used to hook up the intermediate results for advanced usages. See below: 
 
 ```js
 const swaggeringMongoose = require('swaggering-mongoose');
@@ -93,12 +95,6 @@ swaggering-mongoose supports relationships between definitions in a Swagger docu
 }
 ```
 
-## Limitations
-
-swaggering-mongoose supports the following attributes out-of-the-box: integer, long, float, double, string, password, boolean, date, dateTime, date-time, object, array (including nested schemas).
-
-Mongoose doesn't support `required` property for nested object (plain object, not reference), so, swaggering-mongoose silently ignores the property (like a `"x-swaggering-mongoose": { required: false }` override, see below).
-
 ## Mongoose extension and override
 
 While the Swagger specification tries to accommodate most use cases, additional data can be added to extend the documentation with specific mongoose properties, such as indexes, external references or fields selection.
@@ -135,5 +131,9 @@ Extension are defined as JSON objects in a `x-swaggering-mongoose` property, e.g
     },
 ```
 
+## Limitations
 
+swaggering-mongoose supports the following attributes out-of-the-box: integer, long, float, double, string, password, boolean, date, dateTime, date-time, object, array (including nested schemas).
+
+Mongoose doesn't support `required` property for nested object (plain object, not reference). Similarly, swaggering-mongoose silently ignores the property even if explicitly defined with an override.
 
