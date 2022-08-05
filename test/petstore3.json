@@ -164,7 +164,7 @@
           "timestamps": true, 
           "versionKey": "__custom"
         }
-      },
+      }, 
       "Error": {
         "type": "object",
         "required": [
