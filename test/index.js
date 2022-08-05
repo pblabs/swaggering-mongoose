@@ -349,4 +349,26 @@ describe('swaggering-mongoose tests', function() {
       });
     });
   });
+
+  it('should support schema options', function(done) {
+    var swagger = fs.readFileSync('./test/petstore3.json');
+    var Owner = swaggerMongoose.compile(swagger).models.Owner;
+    assert(Owner.schema.options.timestamps === true, 'timestamps schema option not set');
+    assert(Owner.schema.options.versionKey === '__custom', 'versionKey schema option not set');
+
+    var myOwner = new Owner({ name: 'Chris' });
+    myOwner.save(function(err) {
+      if (err) {
+        throw err;
+      }
+      Owner.findOne({
+        id: 123
+      }, function(err, data) {
+        assert(!!data.createdAt === true, 'timestamp schema option not applied');
+        assert(!!data.updatedAt === true, 'timestamp schema option not applied');
+        assert(data.__custom === 0, 'versionKey schema option not applied');
+        done();
+      });
+    });
+  });
 });

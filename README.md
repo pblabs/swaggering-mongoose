@@ -131,6 +131,25 @@ These extras can be defined as JSON objects in a `x-swaggering-mongoose` propert
     },
 ```
 
+Additionally, specific mongoose schema options can be applied using the same `x-swaggering-mongoose` property, e.g.
+
+```
+"schemas": {
+    "Owner": {
+        "type": "object",
+        "properties": {
+            "name": {
+                "type": "string"
+            }
+        },
+        "x-swaggering-mongoose": {
+            "timestamps": true, 
+            "versionKey": "_custom"
+        }
+    },
+}
+```
+
 ## Limitations
 
 swaggering-mongoose supports the following attributes out-of-the-box: integer, long, float, double, string, password, boolean, date, dateTime, date-time, object, array (including nested schemas).
