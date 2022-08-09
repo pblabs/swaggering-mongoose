@@ -101,7 +101,7 @@ While the Swagger specification tries to accommodate most use cases, additional 
 
 These extras can be defined as JSON objects in a `x-swaggering-mongoose` property, e.g.
 
-```
+```json
 "definitions" : {
     "User" : {
         "type": "object",
@@ -131,9 +131,9 @@ These extras can be defined as JSON objects in a `x-swaggering-mongoose` propert
     },
 ```
 
-Additionally, specific mongoose schema options can be applied using the same `x-swaggering-mongoose` property, e.g.
+Additionally, (thanks @ChrisdeWolf) specific mongoose schema options can be applied using the same `x-swaggering-mongoose` property, e.g.
 
-```
+```json
 "schemas": {
     "Owner": {
         "type": "object",
