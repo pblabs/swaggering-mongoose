@@ -256,6 +256,48 @@ describe('swaggering-mongoose tests', function() {
     });
   });
 
+  it('should support the Mixed type', function(done) {
+    var swagger = fs.readFileSync('./test/person.swaggering.json');
+
+    var models = swaggerMongoose.compile(swagger.toString()).models;
+
+    var Person = models.Person;
+
+    var person = new Person({
+      login: 'jb@mi6.gov',
+      firstName: 'James',
+      lastName: 'Bond',
+      password: 'secret',
+      other: {
+        phoneNumber: '0123456789',
+        tags: [ 'sample', 'list', 'of', 'tags']
+      }
+    });
+    person.save(function(err, data) {
+      assert(!err, 'error should be null');
+      assert(data, 'data should be defined');
+      Person
+        .findOne({
+          _id: data._id
+        })
+        .lean()
+        .exec(function(err, newPerson) {
+          assert(!err, 'error should be null');
+          assert(newPerson, 'newPerson should be defined');
+
+          assert(newPerson.login === 'jb@mi6.gov', 'Login is incorrect');
+          assert(newPerson.firstName === 'James', 'First Name is incorrect');
+          assert(newPerson.lastName === 'Bond', 'Last Name is incorrect');
+          assert(newPerson.password === undefined, 'Person password should be not visible');
+          assert(newPerson.cars.length === 0, 'Cars content is wrong');
+          assert(newPerson.houses.length === 0, 'Houses content is wrong');
+          assert(newPerson.contacts.length === 0, 'Contacts content is wrong');
+          done();
+        });
+    });
+  });
+
+
   it('should avoid reserved mongodb fields', function(done) {
     var swagger = fs.readFileSync('./test/person.json');
     var models = swaggerMongoose.compile(swagger.toString()).models;

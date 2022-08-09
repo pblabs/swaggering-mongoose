@@ -140,6 +140,15 @@
           "items": {
             "$ref": "#/definitions/Contact"
           }
+        },
+        "other": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "x-swaggering-mongoose": {
+              "type": "Mixed"
+            }            
+          }
         }
       }
     },
