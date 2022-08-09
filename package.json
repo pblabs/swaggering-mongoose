@@ -1,6 +1,6 @@
 {
   "name": "swaggering-mongoose",
-  "version": "0.3.4",
+  "version": "0.4.0",
   "description": "Generate mongoose schemas and models from Swagger documents",
   "main": "./lib/index.js",
   "directories": {
@@ -13,6 +13,7 @@
     "async": "^1.5.0",
     "bson": "^2.0.2",
     "chai": "^2.2.0",
+    "eslint": "^7.23.0",    
     "mocha": "^2.2.1",
     "mockgoose": "8.0.4",
     "mongoose": "*"
