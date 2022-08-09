@@ -27,6 +27,7 @@ describe('swaggering-mongoose tests', function() {
     delete mongoose.models.House;
     delete mongoose.models.Car;
     delete mongoose.models.Human;
+    delete mongoose.models.Contact;
     mockgoose.helper.reset().then(function() {
       mongoose.disconnect(done);
     });
@@ -404,7 +405,7 @@ describe('swaggering-mongoose tests', function() {
         throw err;
       }
       Owner.findOne({
-        id: 123
+        name: 'Chris'
       }, function(err, data) {
         assert(!!data.createdAt === true, 'timestamp schema option not applied');
         assert(!!data.updatedAt === true, 'timestamp schema option not applied');
