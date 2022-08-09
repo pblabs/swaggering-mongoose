@@ -1,4 +1,4 @@
-Copyright 2016 pianobit - pianobit.com
+Copyright 2016 pianobit - pianobit.com and other contributors
 
 Based on swagger-mongoose, copyright 2015 Simon Guest
 
