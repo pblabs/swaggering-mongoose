@@ -414,4 +414,27 @@ describe('swaggering-mongoose tests', function() {
       });
     });
   });
+
+  it('should support default properties directly in the schema definition', function(done) {
+    var swagger = fs.readFileSync('./test/petstore3.json');
+    var Error = swaggerMongoose.compile(swagger).models.Error;
+    assert(Error.schema.paths.priority.defaultValue === 'high', 'Error priority schema property default not set');
+    assert(Error.schema.paths.impacted_groups.defaultValue()[0] === 'alpha', 'Error impacted_groups schema property default not set');
+    assert(Error.schema.paths.impacted_groups.defaultValue()[1] === 'beta', 'Error impacted_groups schema property default not set');
+
+    var error = new Error({ code: 0, message: 'oops!' });
+    error.save(function(err) {
+      if (err) {
+        throw err;
+      }
+      Error.findOne({
+        code: 0
+      }, function(err, data) {
+        assert(data.priority === 'high', 'schema property default value is missing');
+        assert(data.impacted_groups[0] === 'alpha', 'schema property default value is missing');
+        assert(data.impacted_groups[1] === 'beta', 'schema property default value is missing');
+        done();
+      });
+    });
+  });
 });

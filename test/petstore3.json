@@ -178,6 +178,17 @@
           },
           "message": {
             "type": "string"
+          },
+          "priority": {
+            "type": "string",
+            "default": "high"
+          },
+          "impacted_groups": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "default": ["alpha", "beta"]
           }
         }
       }

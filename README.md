@@ -88,7 +88,8 @@ swaggering-mongoose supports relationships between definitions in a Swagger docu
         "type" : "object",
         "properties" : {
             "name": {
-                "type": "string"
+                "type": "string",
+                "default": "cat1"
             }
         }
     }
