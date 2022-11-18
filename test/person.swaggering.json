@@ -166,7 +166,8 @@
           }
         },
         "priority": {
-          "type": "string"
+          "type": "string",
+          "default": "high"
         }
       }
     },

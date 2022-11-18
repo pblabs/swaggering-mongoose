@@ -197,8 +197,7 @@ describe('swaggering-mongoose tests', function() {
           results.car._id
         ],
         contacts: [{
-          contactID: '0000000000000000000000aa',
-          priority: 'high'
+          contactID: '0000000000000000000000aa'
         }]
       });
       person.save(function(err, data) {
