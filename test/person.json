@@ -13,9 +13,7 @@
     }
   },
   "basePath": "/api",
-  "schemes": [
-    "http"
-  ],
+  "schemes": ["http"],
   "paths": {
     "/persons": {
       "get": {
@@ -48,10 +46,7 @@
   },
   "definitions": {
     "House": {
-      "required": [
-        "lng",
-        "lat"
-      ],
+      "required": ["lng", "lat"],
       "properties": {
         "description": {
           "type": "string"
@@ -65,10 +60,7 @@
       }
     },
     "Car": {
-      "required": [
-        "provider",
-        "model"
-      ],
+      "required": ["provider", "model"],
       "properties": {
         "provider": {
           "type": "string"
@@ -79,9 +71,7 @@
       }
     },
     "Person": {
-      "required": [
-        "login"
-      ],
+      "required": ["login"],
       "properties": {
         "_id": {
           "type": "string"
@@ -90,7 +80,7 @@
           "type": "string"
         },
         "name": {
-          "type" : "object",
+          "type": "object",
           "properties": {
             "firstName": {
               "type": "string"
@@ -145,10 +135,7 @@
       }
     },
     "Error": {
-      "required": [
-        "code",
-        "message"
-      ],
+      "required": ["code", "message"],
       "properties": {
         "code": {
           "type": "integer",

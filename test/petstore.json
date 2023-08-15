@@ -14,9 +14,7 @@
   },
   "host": "petstore.swagger.io",
   "basePath": "/api",
-  "schemes": [
-    "http"
-  ],
+  "schemes": ["http"],
   "paths": {
     "/pets": {
       "get": {
@@ -49,10 +47,7 @@
   },
   "definitions": {
     "Pet": {
-      "required": [
-        "id",
-        "name"
-      ],
+      "required": ["id", "name"],
       "properties": {
         "id": {
           "type": "integer",
@@ -85,8 +80,8 @@
             "type": "integer"
           }
         },
-        "address":{
-          "type":"array",
+        "address": {
+          "type": "array",
           "items": {
             "$ref": "#/definitions/Address"
           }
@@ -94,7 +89,7 @@
       }
     },
     "Address": {
-      "type":"object",
+      "type": "object",
       "properties": {
         "addressLine1": {
           "type": "string"
@@ -102,10 +97,7 @@
       }
     },
     "Error": {
-      "required": [
-        "code",
-        "message"
-      ],
+      "required": ["code", "message"],
       "properties": {
         "code": {
           "type": "integer",
