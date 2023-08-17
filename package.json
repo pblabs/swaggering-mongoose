@@ -10,12 +10,11 @@
     "foreach": "^2.0.5"
   },
   "devDependencies": {
-    "async": "^1.5.0",
     "bson": "^2.0.2",
     "chai": "^2.2.0",
     "eslint": "^7.23.0",
     "mocha": "^2.2.1",
-    "mockgoose": "8.0.4",
+    "mongodb-memory-server": "^8.15.0",
     "mongoose": "*"
   },
   "scripts": {

@@ -1,27 +1,25 @@
 /* eslint-env mocha */
 "use strict";
-var swaggerMongoose = require("./../lib/index");
+const swaggerMongoose = require("./../lib/index");
 
-var fs = require("fs");
-var async = require("async");
-var mongoose = require("mongoose");
-var Mockgoose = require("mockgoose").Mockgoose;
-var mockgoose = new Mockgoose(mongoose);
-var assert = require("chai").assert;
-var Schema = mongoose.Schema;
+const fs = require("fs");
+const async = require("async");
+const mongoose = require("mongoose");
+const { MongoMemoryServer } = require("mongodb-memory-server");
+// const Mockgoose = require("mockgoose").Mockgoose;
+// const mockgoose = new Mockgoose(mongoose);
 
-describe("swaggering-mongoose tests", function() {
-  beforeEach(function(done) {
-    mockgoose.prepareStorage().then(function() {
-      mongoose.connect(
-        "mongodb://localhost/schema-test",
-        { useNewUrlParser: true },
-        done
-      );
-    });
+const assert = require("chai").assert;
+const Schema = mongoose.Schema;
+
+describe("swaggering-mongoose tests", () => {
+  let mongo = null;
+  beforeEach(async () => {
+    mongo = await MongoMemoryServer.create();
+    const uri = mongo.getUri();
+    await mongoose.connect(uri, { useNewUrlParser: true });
   });
-
-  afterEach(function(done) {
+  afterEach(async () => {
     delete mongoose.models.Pet;
     delete mongoose.models.Owner;
     delete mongoose.models.Address;
@@ -31,15 +29,17 @@ describe("swaggering-mongoose tests", function() {
     delete mongoose.models.Car;
     delete mongoose.models.Human;
     delete mongoose.models.Contact;
-    mockgoose.helper.reset().then(function() {
-      mongoose.disconnect(done);
-    });
+    if (mongo) {
+      await mongoose.connection.dropDatabase();
+      await mongoose.connection.close();
+      await mongo.stop();
+    }
   });
 
-  it("should create a sample pet and return all valid properties", function(done) {
-    var swagger = fs.readFileSync("./test/petstore.json");
-    var Pet = swaggerMongoose.compile(swagger).models.Pet;
-    var myPet = new Pet({
+  it("should create a sample pet and return all valid properties", async () => {
+    const swagger = fs.readFileSync("./test/petstore.json");
+    const Pet = swaggerMongoose.compile(swagger).models.Pet;
+    const myPet = new Pet({
       id: 123,
       name: "Fluffy",
       dob: new Date(),
@@ -57,131 +57,84 @@ describe("swaggering-mongoose tests", function() {
       ],
       notAKey: "test"
     });
-    myPet.save(function(err) {
-      if (err) {
-        throw err;
-      }
-      Pet.findOne(
-        {
-          id: 123
-        },
-        function(err, data) {
-          assert(data.id === 123, "ID mismatch");
-          assert(data.name === "Fluffy", "Name mismatch");
-          assert(data.price === 99.99, "Price mismatch");
-          assert(data.sold === true, "Sold mismatch");
-          assert(data.friends.length === 2, "Friends mismatch");
-          assert(
-            data.favoriteNumbers.length === 4,
-            "Favorite numbers mismatch"
-          );
-          assert(
-            data.address[0].addressLine1 === "1 Main St.",
-            "Nested address mismatch"
-          );
-          assert(
-            data.address[1].addressLine1 === "2 Main St.",
-            "Nested address mismatch"
-          );
-          assert(!data.notAKey, "Strict schema mismatch");
-          done();
-        }
-      );
-    });
+    await myPet.save();
+    const data = await Pet.findOne({ id: 123 });
+
+    assert(data.id === 123, "ID mismatch");
+    assert(data.name === "Fluffy", "Name mismatch");
+    assert(data.price === 99.99, "Price mismatch");
+    assert(data.sold === true, "Sold mismatch");
+    assert(data.friends.length === 2, "Friends mismatch");
+    assert(data.favoriteNumbers.length === 4, "Favorite numbers mismatch");
+    assert(
+      data.address[0].addressLine1 === "1 Main St.",
+      "Nested address mismatch"
+    );
+    assert(
+      data.address[1].addressLine1 === "2 Main St.",
+      "Nested address mismatch"
+    );
+    assert(!data.notAKey, "Strict schema mismatch");
   });
 
-  it("should not create a sample without required field", function(done) {
-    var swagger = fs.readFileSync("./test/petstore.json");
-    var Pet = swaggerMongoose.compile(swagger).models.Pet;
-    var myPet = new Pet({
+  it("should not create a sample without required field", async () => {
+    const swagger = fs.readFileSync("./test/petstore.json");
+    const Pet = swaggerMongoose.compile(swagger).models.Pet;
+    const myPet = new Pet({
       id: 123
     });
-    myPet.save(function(err) {
-      assert(err, "Validation error is missing");
-      done();
-    });
+    const err = await myPet.save().catch(err => err);
+    assert(err, "Validation error is missing");
   });
 
-  it("should create a sample pet from a file", function(done) {
-    var swagger = fs.readFileSync("./test/petstore.json");
-    var Pet = swaggerMongoose.compile(swagger).models.Pet;
-    var myPet = new Pet({
+  it("should create a sample pet from a file", async () => {
+    const swagger = fs.readFileSync("./test/petstore.json");
+    const Pet = swaggerMongoose.compile(swagger).models.Pet;
+    const myPet = new Pet({
       id: 123,
       name: "Fluffy"
     });
-    myPet.save(function(err) {
-      if (err) {
-        throw err;
-      }
-      Pet.findOne(
-        {
-          id: 123
-        },
-        function(err, data) {
-          assert(data.id === 123, "ID mismatch");
-          assert(data.name === "Fluffy", "Name mismatch");
-          done();
-        }
-      );
-    });
+    await myPet.save();
+    const data = await Pet.findOne({ id: 123 });
+
+    assert(data.id === 123, "ID mismatch");
+    assert(data.name === "Fluffy", "Name mismatch");
   });
 
-  it("should create a sample pet from a JSON object", function(done) {
-    var swagger = fs.readFileSync("./test/petstore.json");
-    var Pet = swaggerMongoose.compile(JSON.parse(swagger)).models.Pet;
-    var myPet = new Pet({
+  it("should create a sample pet from a JSON object", async () => {
+    const swagger = fs.readFileSync("./test/petstore.json");
+    const Pet = swaggerMongoose.compile(JSON.parse(swagger)).models.Pet;
+    const myPet = new Pet({
       id: 123,
       name: "Fluffy"
     });
-    myPet.save(function(err) {
-      if (err) {
-        throw err;
-      }
-      Pet.findOne(
-        {
-          id: 123
-        },
-        function(err, data) {
-          assert(data.id === 123, "ID mismatch");
-          assert(data.name === "Fluffy", "Name mismatch");
-          done();
-        }
-      );
-    });
+    await myPet.save();
+    const data = await Pet.findOne({ id: 123 });
+
+    assert(data.id === 123, "ID mismatch");
+    assert(data.name === "Fluffy", "Name mismatch");
   });
 
-  it("should create a sample pet from a string", function(done) {
-    var swagger = fs.readFileSync("./test/petstore.json");
-    var Pet = swaggerMongoose.compile(swagger.toString()).models.Pet;
-    var myPet = new Pet({
+  it("should create a sample pet from a string", async () => {
+    const swagger = fs.readFileSync("./test/petstore.json");
+    const Pet = swaggerMongoose.compile(swagger.toString()).models.Pet;
+    const myPet = new Pet({
       id: 123,
       name: "Fluffy"
     });
-    myPet.save(function(err) {
-      if (err) {
-        throw err;
-      }
-      Pet.findOne(
-        {
-          id: 123
-        },
-        function(err, data) {
-          assert(data.id === 123, "ID mismatch");
-          assert(data.name === "Fluffy", "Name mismatch");
-          done();
-        }
-      );
-    });
+    await myPet.save();
+    const data = await Pet.findOne({ id: 123 });
+
+    assert(data.id === 123, "ID mismatch");
+    assert(data.name === "Fluffy", "Name mismatch");
   });
 
-  it("should create a sample person with relations to external collections", function(done) {
-    var swagger = fs.readFileSync("./test/person.swaggering.json");
-
-    var models = swaggerMongoose.compile(swagger.toString()).models;
-
-    var Person = models.Person;
-    var House = models.House;
-    var Car = models.Car;
+  it("should create a sample person with relations to external collections", async () => {
+    const swagger = fs.readFileSync("./test/person.swaggering.json");
+    const models = swaggerMongoose.compile(swagger.toString()).models;
+    const Person = models.Person;
+    const House = models.House;
+    const Car = models.Car;
 
     assert(
       Person.schema.paths.cars.options.type[0].type === Schema.Types.ObjectId,
@@ -200,158 +153,80 @@ describe("swaggering-mongoose tests", function() {
       'Ref to "house" should be "House"'
     );
 
-    async.parallel(
-      {
-        house: function(cb) {
-          var house = new House({
-            description: "Cool house",
-            lng: 50.3,
-            lat: 30
-          });
-          house.save(function(err, data) {
-            cb(err, data);
-          });
-        },
-        car: function(cb) {
-          var car = new Car({
-            provider: "Mazda",
-            model: "CX-5"
-          });
-          car.save(function(err, data) {
-            cb(err, data);
-          });
-        }
-      },
-      function(err, results) {
-        var person = new Person({
-          login: "jb@mi6.gov",
-          firstName: "James",
-          lastName: "Bond",
-          password: "secret",
-          houses: [results.house._id],
-          cars: [results.car._id],
-          contacts: [
-            {
-              contactID: "0000000000000000000000aa"
-            }
-          ]
-        });
-        person.save(function(err, data) {
-          assert(!err, "error should be null");
-          assert(data, "data should be defined");
-          Person.findOne({
-            _id: data._id
-          })
-            .lean()
-            .exec(function(err, newPerson) {
-              assert(!err, "error should be null");
-              assert(newPerson, "newPerson should be defined");
-              async.parallel(
-                {
-                  car: function(cb) {
-                    Car.findOne(
-                      {
-                        _id: newPerson.cars[0]
-                      },
-                      function(err, car) {
-                        assert(!err, "error should be null");
-                        assert(car, "car should be defined");
-                        cb(err, car);
-                      }
-                    );
-                  },
-                  house: function(cb) {
-                    House.findOne(
-                      {
-                        _id: newPerson.houses[0]
-                      },
-                      function(err, house) {
-                        assert(!err, "error should be null");
-                        assert(house, "house should be defined");
-                        cb(err, house);
-                      }
-                    );
-                  }
-                },
-                function(err, populated) {
-                  newPerson.cars = [populated.car];
-                  newPerson.houses = [populated.house];
+    const house = new House({
+      description: "Cool house",
+      lng: 50.3,
+      lat: 30
+    });
+    const houseData = await house.save();
 
-                  assert(
-                    newPerson.login === "jb@mi6.gov",
-                    "Login is incorrect"
-                  );
-                  assert(
-                    newPerson.firstName === "James",
-                    "First Name is incorrect"
-                  );
-                  assert(
-                    newPerson.lastName === "Bond",
-                    "Last Name is incorrect"
-                  );
-                  assert(
-                    newPerson.password === undefined,
-                    "Person password should be not visible"
-                  );
-                  assert(newPerson.cars.length === 1, "Cars content is wrong");
-                  assert(
-                    newPerson.cars[0].model === "CX-5",
-                    "Car model is incorrect"
-                  );
-                  assert(
-                    newPerson.cars[0].provider === "Mazda",
-                    "Car provider is incorrect"
-                  );
-                  assert(
-                    newPerson.houses.length === 1,
-                    "Houses content is wrong"
-                  );
-                  assert(
-                    newPerson.houses[0].lat === 30,
-                    "House latitude is incorrect"
-                  );
-                  assert(
-                    newPerson.houses[0].lng === 50.3,
-                    "House longitude is incorrect"
-                  );
-                  assert(
-                    newPerson.houses[0].description === "Cool house",
-                    "House description is incorrect"
-                  );
-                  assert(
-                    newPerson.contacts.length === 1,
-                    "Contacts content is wrong"
-                  );
-                  assert(
-                    newPerson.contacts[0].priority === "high",
-                    "Contact priority is wrong"
-                  );
-                  assert(
-                    newPerson.contacts[0].contactID.toString() ===
-                      "0000000000000000000000aa",
-                    "Contact contactID type is wrong"
-                  );
-                  assert(
-                    newPerson.contacts[0]._id,
-                    "Contact _id should be defined"
-                  );
-                  done();
-                }
-              );
-            });
-        });
-      }
+    const car = new Car({
+      provider: "Mazda",
+      model: "CX-5"
+    });
+    const carData = await car.save();
+
+    const person = new Person({
+      login: "jb@mi6.gov",
+      firstName: "James",
+      lastName: "Bond",
+      password: "secret",
+      houses: [houseData._id],
+      cars: [carData._id],
+      contacts: [
+        {
+          contactID: "0000000000000000000000aa"
+        }
+      ]
+    });
+    const data = await person.save();
+    assert(data, "data should be defined");
+
+    const newPerson = await Person.findOne({ _id: data._id })
+      .lean()
+      .exec();
+    assert(newPerson, "newPerson should be defined");
+    const dbCar = await Car.findOne({ _id: newPerson.cars[0] });
+    assert(dbCar, "car should be defined");
+    const dbHouse = await House.findOne({ _id: newPerson.houses[0] });
+    assert(dbHouse, "house should be defined");
+
+    newPerson.cars = [dbCar];
+    newPerson.houses = [dbHouse];
+    assert(newPerson.login === "jb@mi6.gov", "Login is incorrect");
+    assert(newPerson.firstName === "James", "First Name is incorrect");
+    assert(newPerson.lastName === "Bond", "Last Name is incorrect");
+    assert(
+      newPerson.password === undefined,
+      "Person password should be not visible"
     );
+    assert(newPerson.cars.length === 1, "Cars content is wrong");
+    assert(newPerson.cars[0].model === "CX-5", "Car model is incorrect");
+    assert(newPerson.cars[0].provider === "Mazda", "Car provider is incorrect");
+    assert(newPerson.houses.length === 1, "Houses content is wrong");
+    assert(newPerson.houses[0].lat === 30, "House latitude is incorrect");
+    assert(newPerson.houses[0].lng === 50.3, "House longitude is incorrect");
+    assert(
+      newPerson.houses[0].description === "Cool house",
+      "House description is incorrect"
+    );
+    assert(newPerson.contacts.length === 1, "Contacts content is wrong");
+    assert(
+      newPerson.contacts[0].priority === "high",
+      "Contact priority is wrong"
+    );
+    assert(
+      newPerson.contacts[0].contactID.toString() === "0000000000000000000000aa",
+      "Contact contactID type is wrong"
+    );
+    assert(newPerson.contacts[0]._id, "Contact _id should be defined");
   });
 
-  it("should support the Mixed type", function(done) {
-    var swagger = fs.readFileSync("./test/person.swaggering.json");
-
-    var models = swaggerMongoose.compile(swagger.toString()).models;
-
-    var Person = models.Person;
-
-    var person = new Person({
+  it("should support the Mixed type", async () => {
+    const swagger = fs.readFileSync("./test/person.swaggering.json");
+    const models = swaggerMongoose.compile(swagger.toString()).models;
+    const Person = models.Person;
+    const myPerson = new Person({
       login: "jb@mi6.gov",
       firstName: "James",
       lastName: "Bond",
@@ -361,41 +236,33 @@ describe("swaggering-mongoose tests", function() {
         tags: ["sample", "list", "of", "tags"]
       }
     });
-    person.save(function(err, data) {
-      assert(!err, "error should be null");
-      assert(data, "data should be defined");
-      Person.findOne({
-        _id: data._id
-      })
-        .lean()
-        .exec(function(err, newPerson) {
-          assert(!err, "error should be null");
-          assert(newPerson, "newPerson should be defined");
+    const saveData = await myPerson.save();
+    assert(saveData, "data should be defined");
+    const newPerson = await Person.findOne({ _id: saveData._id })
+      .lean()
+      .exec();
 
-          assert(newPerson.login === "jb@mi6.gov", "Login is incorrect");
-          assert(newPerson.firstName === "James", "First Name is incorrect");
-          assert(newPerson.lastName === "Bond", "Last Name is incorrect");
-          assert(
-            newPerson.password === undefined,
-            "Person password should be not visible"
-          );
-          assert(newPerson.cars.length === 0, "Cars content is wrong");
-          assert(newPerson.houses.length === 0, "Houses content is wrong");
-          assert(newPerson.contacts.length === 0, "Contacts content is wrong");
-          done();
-        });
-    });
+    assert(newPerson, "newPerson should be defined");
+    assert(newPerson.login === "jb@mi6.gov", "Login is incorrect");
+    assert(newPerson.firstName === "James", "First Name is incorrect");
+    assert(newPerson.lastName === "Bond", "Last Name is incorrect");
+    assert(
+      newPerson.password === undefined,
+      "Person password should be not visible"
+    );
+    assert(newPerson.cars.length === 0, "Cars content is wrong");
+    assert(newPerson.houses.length === 0, "Houses content is wrong");
+    assert(newPerson.contacts.length === 0, "Contacts content is wrong");
   });
 
-  it("should avoid reserved mongodb fields", function(done) {
-    var swagger = fs.readFileSync("./test/person.json");
-    var models = swaggerMongoose.compile(swagger.toString()).models;
-
-    var Person = models.Person;
+  it("should avoid reserved mongodb fields", async () => {
+    const swagger = fs.readFileSync("./test/person.json");
+    const models = swaggerMongoose.compile(swagger.toString()).models;
+    const Person = models.Person;
 
     // next logic is indicate that "_id" and "__v" fields are MongoDB native
     assert(
-      Person.schema.paths._id.instance === "ObjectID",
+      Person.schema.paths._id.instance === "ObjectId",
       'Wrong "_id" attributes'
     );
     assert(
@@ -411,26 +278,21 @@ describe("swaggering-mongoose tests", function() {
       Person.schema.paths.__v.options.type === Number,
       'Wrong "__v" attributes'
     );
-
-    done();
   });
 
-  it("should supports array of objects as nested schema", function(done) {
-    var swagger = fs.readFileSync("./test/person.json");
-    var models = swaggerMongoose.compile(swagger.toString()).models;
+  it("should supports array of objects as nested schema", async () => {
+    const swagger = fs.readFileSync("./test/person.json");
+    const models = swaggerMongoose.compile(swagger.toString()).models;
+    const Person = models.Person;
 
-    var Person = models.Person;
-
-    // next logic is indicate that "items" is  processed as a nested schema
+    // next logic is indicate that "items" is processed as a nested schema
     assert(
       Person.schema.paths.items.instance === "Array",
       'Wrong "items" attributes: instance'
     );
-
     var nestedObject = Person.schema.paths.items;
-
     assert(
-      nestedObject.schema.paths._id.instance === "ObjectID",
+      nestedObject.schema.paths._id.instance === "ObjectId",
       'Wrong "_id" attributes'
     );
     assert(
@@ -446,19 +308,16 @@ describe("swaggering-mongoose tests", function() {
       nestedObject.schema.paths.name.options.type === String,
       'Wrong "name" attributes'
     );
-
-    done();
   });
 
-  it("should process circular references", function(done) {
-    var swagger = fs.readFileSync("./test/person.json");
-    var models = swaggerMongoose.compile(swagger.toString()).models;
-
-    var Human = models.Human;
+  it("should process circular references", async () => {
+    const swagger = fs.readFileSync("./test/person.json");
+    const models = swaggerMongoose.compile(swagger.toString()).models;
+    const Human = models.Human;
 
     // next logic is indicate that circular references are processed
     assert(
-      Human.schema.paths.father.instance === "ObjectID",
+      Human.schema.paths.father.instance === "ObjectId",
       'Wrong "father" attribute: instance'
     );
     assert(
@@ -466,69 +325,47 @@ describe("swaggering-mongoose tests", function() {
       'Wrong "father" attribute: type'
     );
     assert(
-      Human.schema.paths.mother.instance === "ObjectID",
+      Human.schema.paths.mother.instance === "ObjectId",
       'Wrong "mother" attribute: instance'
     );
     assert(
       Human.schema.paths.mother.options.type === Schema.Types.ObjectId,
       'Wrong "mother" attribute: type'
     );
-
-    done();
   });
 
-  it("should support the openApi 3.0.0 format", function(done) {
-    var swagger = fs.readFileSync("./test/petstore3.json");
-    var Pet = swaggerMongoose.compile(swagger).models.Pet;
-    var myPet = new Pet({
+  it("should support the openApi 3.0.0 format", async () => {
+    const swagger = fs.readFileSync("./test/petstore3.json");
+    const Pet = swaggerMongoose.compile(swagger).models.Pet;
+    const myPet = new Pet({
       id: 123,
       name: "Fluffy"
     });
-    myPet.save(function(err) {
-      if (err) {
-        throw err;
-      }
-      Pet.findOne(
-        {
-          id: 123
-        },
-        function(err, data) {
-          assert(data.id === 123, "ID mismatch");
-          assert(data.name === "Fluffy", "Name mismatch");
-          done();
-        }
-      );
-    });
+    await myPet.save();
+    const data = await Pet.findOne({ id: 123 });
+
+    assert(data.id === 123, "ID mismatch");
+    assert(data.name === "Fluffy", "Name mismatch");
   });
 
-  it("should handle object reference properties based on reference type", function(done) {
-    var swagger = fs.readFileSync("./test/petstore3.json");
-    var Pet = swaggerMongoose.compile(swagger).models.Pet;
-    var myPet = new Pet({
+  it("should handle object reference properties based on reference type", async () => {
+    const swagger = fs.readFileSync("./test/petstore3.json");
+    const Pet = swaggerMongoose.compile(swagger).models.Pet;
+    const myPet = new Pet({
       id: 123,
       name: "Gizmo",
       owner: { name: "Chris" }
     });
-    myPet.save(function(err) {
-      if (err) {
-        throw err;
-      }
-      Pet.findOne(
-        {
-          id: 123
-        },
-        function(err, data) {
-          assert(typeof data.owner === "object", "Type mismatch");
-          assert(data.owner.name === "Chris", "Name mismatch");
-          done();
-        }
-      );
-    });
+    await myPet.save();
+    const data = await Pet.findOne({ id: 123 });
+
+    assert(typeof data.owner === "object", "Type mismatch");
+    assert(data.owner.name === "Chris", "Name mismatch");
   });
 
-  it("should support schema options", function(done) {
-    var swagger = fs.readFileSync("./test/petstore3.json");
-    var Owner = swaggerMongoose.compile(swagger).models.Owner;
+  it("should support schema options", async () => {
+    const swagger = fs.readFileSync("./test/petstore3.json");
+    const Owner = swaggerMongoose.compile(swagger).models.Owner;
     assert(
       Owner.schema.options.timestamps === true,
       "timestamps schema option not set"
@@ -538,34 +375,18 @@ describe("swaggering-mongoose tests", function() {
       "versionKey schema option not set"
     );
 
-    var myOwner = new Owner({ name: "Chris" });
-    myOwner.save(function(err) {
-      if (err) {
-        throw err;
-      }
-      Owner.findOne(
-        {
-          name: "Chris"
-        },
-        function(err, data) {
-          assert(
-            !!data.createdAt === true,
-            "timestamp schema option not applied"
-          );
-          assert(
-            !!data.updatedAt === true,
-            "timestamp schema option not applied"
-          );
-          assert(data.__custom === 0, "versionKey schema option not applied");
-          done();
-        }
-      );
-    });
+    const myOwner = new Owner({ name: "Chris" });
+    await myOwner.save();
+    const data = await Owner.findOne({ name: "Chris" });
+
+    assert(!!data.createdAt === true, "timestamp schema option not applied");
+    assert(!!data.updatedAt === true, "timestamp schema option not applied");
+    assert(data.__custom === 0, "versionKey schema option not applied");
   });
 
-  it("should support default properties directly in the schema definition", function(done) {
-    var swagger = fs.readFileSync("./test/petstore3.json");
-    var Error = swaggerMongoose.compile(swagger).models.Error;
+  it("should support default properties directly in the schema definition", async () => {
+    const swagger = fs.readFileSync("./test/petstore3.json");
+    const Error = swaggerMongoose.compile(swagger).models.Error;
     assert(
       Error.schema.paths.priority.defaultValue === "high",
       "Error priority schema property default not set"
@@ -579,31 +400,21 @@ describe("swaggering-mongoose tests", function() {
       "Error impacted_groups schema property default not set"
     );
 
-    var error = new Error({ code: 0, message: "oops!" });
-    error.save(function(err) {
-      if (err) {
-        throw err;
-      }
-      Error.findOne(
-        {
-          code: 0
-        },
-        function(err, data) {
-          assert(
-            data.priority === "high",
-            "schema property default value is missing"
-          );
-          assert(
-            data.impacted_groups[0] === "alpha",
-            "schema property default value is missing"
-          );
-          assert(
-            data.impacted_groups[1] === "beta",
-            "schema property default value is missing"
-          );
-          done();
-        }
-      );
-    });
+    const myError = new Error({ code: 0, message: "oops!" });
+    await myError.save();
+    const data = await Error.findOne({ code: 0 });
+
+    assert(
+      data.priority === "high",
+      "schema property default value is missing"
+    );
+    assert(
+      data.impacted_groups[0] === "alpha",
+      "schema property default value is missing"
+    );
+    assert(
+      data.impacted_groups[1] === "beta",
+      "schema property default value is missing"
+    );
   });
 });
