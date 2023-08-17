@@ -3,12 +3,8 @@
 const swaggerMongoose = require("./../lib/index");
 
 const fs = require("fs");
-const async = require("async");
 const mongoose = require("mongoose");
 const { MongoMemoryServer } = require("mongodb-memory-server");
-// const Mockgoose = require("mockgoose").Mockgoose;
-// const mockgoose = new Mockgoose(mongoose);
-
 const assert = require("chai").assert;
 const Schema = mongoose.Schema;
 
