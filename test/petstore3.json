@@ -17,7 +17,9 @@
       "get": {
         "summary": "List all pets",
         "operationId": "listPets",
-        "tags": ["pets"],
+        "tags": [
+          "pets"
+        ],
         "parameters": [
           {
             "name": "limit",
@@ -64,7 +66,9 @@
       "post": {
         "summary": "Create a pet",
         "operationId": "createPets",
-        "tags": ["pets"],
+        "tags": [
+          "pets"
+        ],
         "responses": {
           "201": {
             "description": "Null response"
@@ -86,7 +90,9 @@
       "get": {
         "summary": "Info for a specific pet",
         "operationId": "showPetById",
-        "tags": ["pets"],
+        "tags": [
+          "pets"
+        ],
         "parameters": [
           {
             "name": "petId",
@@ -127,7 +133,10 @@
     "schemas": {
       "Pet": {
         "type": "object",
-        "required": ["id", "name"],
+        "required": [
+          "id",
+          "name"
+        ],
         "properties": {
           "id": {
             "type": "integer",
@@ -152,13 +161,16 @@
           }
         },
         "x-swaggering-mongoose": {
-          "timestamps": true,
+          "timestamps": true, 
           "versionKey": "__custom"
         }
       },
       "Error": {
         "type": "object",
-        "required": ["code", "message"],
+        "required": [
+          "code",
+          "message"
+        ],
         "properties": {
           "code": {
             "type": "integer",

@@ -45,13 +45,13 @@ describe("swaggering-mongoose tests", () => {
       favoriteNumbers: [1, 3, 7, 9],
       address: [
         {
-          addressLine1: "1 Main St."
+          addressLine1: "1 Main St.",
         },
         {
-          addressLine1: "2 Main St."
-        }
+          addressLine1: "2 Main St.",
+        },
       ],
-      notAKey: "test"
+      notAKey: "test",
     });
     await myPet.save();
     const data = await Pet.findOne({ id: 123 });
@@ -77,9 +77,9 @@ describe("swaggering-mongoose tests", () => {
     const swagger = fs.readFileSync("./test/petstore.json");
     const Pet = swaggerMongoose.compile(swagger).models.Pet;
     const myPet = new Pet({
-      id: 123
+      id: 123,
     });
-    const err = await myPet.save().catch(err => err);
+    const err = await myPet.save().catch((err) => err);
     assert(err, "Validation error is missing");
   });
 
@@ -88,7 +88,7 @@ describe("swaggering-mongoose tests", () => {
     const Pet = swaggerMongoose.compile(swagger).models.Pet;
     const myPet = new Pet({
       id: 123,
-      name: "Fluffy"
+      name: "Fluffy",
     });
     await myPet.save();
     const data = await Pet.findOne({ id: 123 });
@@ -102,7 +102,7 @@ describe("swaggering-mongoose tests", () => {
     const Pet = swaggerMongoose.compile(JSON.parse(swagger)).models.Pet;
     const myPet = new Pet({
       id: 123,
-      name: "Fluffy"
+      name: "Fluffy",
     });
     await myPet.save();
     const data = await Pet.findOne({ id: 123 });
@@ -116,7 +116,7 @@ describe("swaggering-mongoose tests", () => {
     const Pet = swaggerMongoose.compile(swagger.toString()).models.Pet;
     const myPet = new Pet({
       id: 123,
-      name: "Fluffy"
+      name: "Fluffy",
     });
     await myPet.save();
     const data = await Pet.findOne({ id: 123 });
@@ -152,13 +152,13 @@ describe("swaggering-mongoose tests", () => {
     const house = new House({
       description: "Cool house",
       lng: 50.3,
-      lat: 30
+      lat: 30,
     });
     const houseData = await house.save();
 
     const car = new Car({
       provider: "Mazda",
-      model: "CX-5"
+      model: "CX-5",
     });
     const carData = await car.save();
 
@@ -171,16 +171,14 @@ describe("swaggering-mongoose tests", () => {
       cars: [carData._id],
       contacts: [
         {
-          contactID: "0000000000000000000000aa"
-        }
-      ]
+          contactID: "0000000000000000000000aa",
+        },
+      ],
     });
     const data = await person.save();
     assert(data, "data should be defined");
 
-    const newPerson = await Person.findOne({ _id: data._id })
-      .lean()
-      .exec();
+    const newPerson = await Person.findOne({ _id: data._id }).lean().exec();
     assert(newPerson, "newPerson should be defined");
     const dbCar = await Car.findOne({ _id: newPerson.cars[0] });
     assert(dbCar, "car should be defined");
@@ -229,14 +227,12 @@ describe("swaggering-mongoose tests", () => {
       password: "secret",
       other: {
         phoneNumber: "0123456789",
-        tags: ["sample", "list", "of", "tags"]
-      }
+        tags: ["sample", "list", "of", "tags"],
+      },
     });
     const saveData = await myPerson.save();
     assert(saveData, "data should be defined");
-    const newPerson = await Person.findOne({ _id: saveData._id })
-      .lean()
-      .exec();
+    const newPerson = await Person.findOne({ _id: saveData._id }).lean().exec();
 
     assert(newPerson, "newPerson should be defined");
     assert(newPerson.login === "jb@mi6.gov", "Login is incorrect");
@@ -335,7 +331,7 @@ describe("swaggering-mongoose tests", () => {
     const Pet = swaggerMongoose.compile(swagger).models.Pet;
     const myPet = new Pet({
       id: 123,
-      name: "Fluffy"
+      name: "Fluffy",
     });
     await myPet.save();
     const data = await Pet.findOne({ id: 123 });
@@ -350,7 +346,7 @@ describe("swaggering-mongoose tests", () => {
     const myPet = new Pet({
       id: 123,
       name: "Gizmo",
-      owner: { name: "Chris" }
+      owner: { name: "Chris" },
     });
     await myPet.save();
     const data = await Pet.findOne({ id: 123 });

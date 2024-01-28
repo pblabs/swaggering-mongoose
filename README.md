@@ -15,16 +15,14 @@ npm install swaggering-mongoose
 Pass a swagger document with `definitions` to the `compile()` method and then dynamically access the underlying mongoose models.
 
 ```js
-const swaggeringMongoose = require("swaggering-mongoose");
+const swaggeringMongoose = require('swaggering-mongoose');
 
-const swagger = fs.readFileSync("./petstore.json");
-const {
-  models: { Pet }
-} = swaggeringMongoose.compile(swagger);
+const swagger = fs.readFileSync('./petstore.json');
+const { models: { Pet } } = swaggeringMongoose.compile(swagger);
 const myPet = new Pet({
-  id: 123,
-  name: "Fluffy"
-});
+    id: 123,
+    name: 'Fluffy'
+    });
 myPet.save();
 ```
 
@@ -38,12 +36,12 @@ The `compile()` method returns both the generated schemas and models from a Swag
 2. getSchemas(definitions): returns a set of mongoose schemas from a definitions set
 3. getModels(schemas): creates and returns a set of mongoose models from a schemas set
 
-These functions are exported along with the `compile()`, to be used to hook up the intermediate results for advanced usages. See below:
+These functions are exported along with the `compile()`, to be used to hook up the intermediate results for advanced usages. See below: 
 
 ```js
-const swaggeringMongoose = require("swaggering-mongoose");
+const swaggeringMongoose = require('swaggering-mongoose');
 
-const swagger = fs.readFileSync("./petstore.json");
+const swagger = fs.readFileSync('./petstore.json');
 
 const definitions = swaggeringMongoose.getDefinitions(swagger);
 // you can augment/override definitions here
@@ -51,19 +49,17 @@ const definitions = swaggeringMongoose.getDefinitions(swagger);
 const schemas = swaggeringMongoose.getSchemas(definitions);
 
 // you can augment schemas here, e.g.
-schemas.Pet.set("autoIndex", true);
+schemas.Pet.set('autoIndex', true);
 // or
-schemas.Pet.set("toJSON", {
-  transform: (doc, pojo) => {
-    pojo._id = pojo._id.toString(); // the _id object is now a string in the POJO doc
-  }
-});
+schemas.Pet.set('toJSON', { transform: (doc, pojo) => {
+  pojo._id = pojo._id.toString() // the _id object is now a string in the POJO doc
+} })
 
 const { Pet } = swaggeringMongoose.getModels(schemas);
 const myPet = new Pet({
-  id: 123,
-  name: "Fluffy"
-});
+    id: 123,
+    name: 'Fluffy'
+    });
 myPet.save();
 ```
 
@@ -148,7 +144,7 @@ Additionally, (thanks @ChrisdeWolf) specific mongoose schema options can be appl
             }
         },
         "x-swaggering-mongoose": {
-            "timestamps": true,
+            "timestamps": true, 
             "versionKey": "_custom"
         }
     },
@@ -160,3 +156,4 @@ Additionally, (thanks @ChrisdeWolf) specific mongoose schema options can be appl
 swaggering-mongoose supports the following attributes out-of-the-box: integer, long, float, double, string, password, boolean, date, dateTime, date-time, object, array (including nested schemas).
 
 Mongoose doesn't support `required` property for nested object (plain object, not reference). Similarly, swaggering-mongoose silently ignores the property even if explicitly defined with an override.
+

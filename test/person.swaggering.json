@@ -13,11 +13,15 @@
     }
   },
   "basePath": "/api",
-  "schemes": ["http"],
+  "schemes": [
+    "http"
+  ],
   "paths": {
     "/persons": {
       "get": {
-        "tags": ["Person Operations"],
+        "tags": [
+          "Person Operations"
+        ],
         "summary": "finds persons in the system",
         "responses": {
           "200": {
@@ -46,7 +50,10 @@
   },
   "definitions": {
     "House": {
-      "required": ["lng", "lat"],
+      "required": [
+        "lng",
+        "lat"
+      ],
       "properties": {
         "description": {
           "type": "string"
@@ -60,7 +67,10 @@
       }
     },
     "Car": {
-      "required": ["provider", "model"],
+      "required": [
+        "provider",
+        "model"
+      ],
       "properties": {
         "provider": {
           "type": "string"
@@ -71,7 +81,10 @@
       }
     },
     "Person": {
-      "required": ["login", "nestedRequiredObject"],
+      "required": [
+        "login",
+        "nestedRequiredObject"
+      ],
       "properties": {
         "_id": {
           "type": "string"
@@ -134,14 +147,17 @@
             "type": "object",
             "x-swaggering-mongoose": {
               "type": "Mixed"
-            }
+            }            
           }
         }
       }
     },
     "Contact": {
       "type": "object",
-      "required": ["contactID", "priority"],
+      "required": [
+        "contactID",
+        "priority"
+      ],
       "properties": {
         "contactID": {
           "type": "string",
@@ -172,7 +188,10 @@
       }
     },
     "Error": {
-      "required": ["code", "message"],
+      "required": [
+        "code",
+        "message"
+      ],
       "properties": {
         "code": {
           "type": "integer",

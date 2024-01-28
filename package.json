@@ -12,7 +12,7 @@
   "devDependencies": {
     "bson": "^2.0.2",
     "chai": "^2.2.0",
-    "eslint": "^7.23.0",
+    "eslint": "^7.23.0",    
     "mocha": "^2.2.1",
     "mongodb-memory-server": "^8.15.0",
     "mongoose": "*"
