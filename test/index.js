@@ -254,7 +254,7 @@ describe("swaggering-mongoose tests", () => {
 
     // next logic is indicate that "_id" and "__v" fields are MongoDB native
     assert(
-      Person.schema.paths._id.instance === "ObjectId",
+      Person.schema.paths._id.instance === "ObjectID",
       'Wrong "_id" attributes'
     );
     assert(
@@ -284,7 +284,7 @@ describe("swaggering-mongoose tests", () => {
     );
     var nestedObject = Person.schema.paths.items;
     assert(
-      nestedObject.schema.paths._id.instance === "ObjectId",
+      nestedObject.schema.paths._id.instance === "ObjectID",
       'Wrong "_id" attributes'
     );
     assert(
@@ -309,7 +309,7 @@ describe("swaggering-mongoose tests", () => {
 
     // next logic is indicate that circular references are processed
     assert(
-      Human.schema.paths.father.instance === "ObjectId",
+      Human.schema.paths.father.instance === "ObjectID",
       'Wrong "father" attribute: instance'
     );
     assert(
@@ -317,7 +317,7 @@ describe("swaggering-mongoose tests", () => {
       'Wrong "father" attribute: type'
     );
     assert(
-      Human.schema.paths.mother.instance === "ObjectId",
+      Human.schema.paths.mother.instance === "ObjectID",
       'Wrong "mother" attribute: instance'
     );
     assert(
